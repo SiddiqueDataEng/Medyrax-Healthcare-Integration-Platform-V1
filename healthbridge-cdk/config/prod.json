@@ -1,0 +1,20 @@
+{
+  "_comment": "Medyrax™ PRODUCTION environment configuration. Update with real AWS account ID, VPC, subnets, and certificate ARNs before deploying.",
+  "awsAccountId": "REPLACE_WITH_PROD_ACCOUNT_ID",
+  "awsRegion": "us-east-1",
+  "envName": "prod",
+  "vpcId": "REPLACE_WITH_PROD_VPC_ID",
+  "privateSubnetIds": ["REPLACE_WITH_PRIVATE_SUBNET_1", "REPLACE_WITH_PRIVATE_SUBNET_2"],
+  "publicSubnetIds": ["REPLACE_WITH_PUBLIC_SUBNET_1", "REPLACE_WITH_PUBLIC_SUBNET_2"],
+  "apiDomainName": "api.Medyrax.example.com",
+  "apiCertificateArn": "REPLACE_WITH_ACM_CERT_ARN",
+  "enableWaf": true,
+  "enableHealthLake": true,
+  "enableMsk": true,
+  "enableElastiCache": true,
+  "retainTables": true,
+  "cognitoAccessTokenExpiryMinutes": 15,
+  "enableXRay": true,
+  "mllpPort": 2575,
+  "pagerDutySnsTopicArn": "REPLACE_WITH_PAGERDUTY_SNS_TOPIC_ARN"
+}

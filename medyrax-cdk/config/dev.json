@@ -1,0 +1,14 @@
+{
+  "awsAccountId": "123456789012",
+  "awsRegion": "us-east-1",
+  "envName": "dev",
+  "enableWaf": false,
+  "enableHealthLake": false,
+  "enableMsk": false,
+  "enableElastiCache": false,
+  "retainStatefulResources": false,
+  "cognitoAccessTokenExpiryMinutes": 15,
+  "enableXRay": true,
+  "mllpPort": 2575,
+  "analyticsBufferMinutes": 30
+}

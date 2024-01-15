@@ -1,0 +1,40 @@
+# Node / CDK
+node_modules/
+dist/
+cdk.out/
+.cache/
+*.js.map
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+.pytest_cache/
+.hypothesis/
+
+# IDE / Kiro
+.vscode/
+.kiro/
+
+# AWS / CDK secrets
+cdk.context.json
+.cdk-outputs.json
+*.pem
+*.key
+
+# Java / Maven
+target/
+*.class
+
+# Misc
+*.log
+*.zip
+*.db
+GITHUBLIST.csv
+master-config.bat
+aws-medyrax-backdate.bat
+ROUGH.TXT

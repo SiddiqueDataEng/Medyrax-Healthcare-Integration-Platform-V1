@@ -1,0 +1,14 @@
+{
+  "_comment": "Medyrax™ STAGING environment configuration.",
+  "awsAccountId": "123456789012",
+  "awsRegion": "us-east-1",
+  "envName": "staging",
+  "enableWaf": true,
+  "enableHealthLake": true,
+  "enableMsk": false,
+  "enableElastiCache": true,
+  "retainTables": true,
+  "cognitoAccessTokenExpiryMinutes": 15,
+  "enableXRay": true,
+  "mllpPort": 2575
+}

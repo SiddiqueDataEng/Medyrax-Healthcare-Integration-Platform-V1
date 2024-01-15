@@ -1,0 +1,3 @@
+"""
+terminology-validator Lambda package.
+"""

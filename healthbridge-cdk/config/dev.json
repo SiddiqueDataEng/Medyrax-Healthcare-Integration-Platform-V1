@@ -1,0 +1,14 @@
+{
+  "_comment": "Medyrax™ DEV environment configuration. Override with actual values for your AWS account.",
+  "awsAccountId": "123456789012",
+  "awsRegion": "us-east-1",
+  "envName": "dev",
+  "enableWaf": false,
+  "enableHealthLake": false,
+  "enableMsk": false,
+  "enableElastiCache": false,
+  "retainTables": false,
+  "cognitoAccessTokenExpiryMinutes": 15,
+  "enableXRay": true,
+  "mllpPort": 2575
+}

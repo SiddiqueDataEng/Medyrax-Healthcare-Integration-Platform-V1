@@ -1,0 +1,14 @@
+{
+  "awsAccountId": "123456789012",
+  "awsRegion": "us-east-1",
+  "envName": "staging",
+  "enableWaf": true,
+  "enableHealthLake": true,
+  "enableMsk": false,
+  "enableElastiCache": true,
+  "retainStatefulResources": true,
+  "cognitoAccessTokenExpiryMinutes": 15,
+  "enableXRay": true,
+  "mllpPort": 2575,
+  "analyticsBufferMinutes": 30
+}

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ================================================================
+         hb-common — Shared Java Library
+         Canonical data model POJOs, error types, event schemas,
+         FHIR resource type enums, and other cross-cutting utilities.
+         All Lambda modules depend on this artifact.
+         ================================================================ -->
+
+    <parent>
+        <groupId>com.Medyrax</groupId>
+        <artifactId>Medyrax-platform</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>hb-common</artifactId>
+    <packaging>jar</packaging>
+    <name>Medyrax™ hb-common — Shared Library</name>
+    <description>
+        Canonical data model POJOs, error types, event schemas, and FHIR resource type
+        enumerations shared across all Medyrax™ Lambda functions.
+    </description>
+
+    <dependencies>
+
+        <!-- Jackson for JSON serialization of event schemas -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- HAPI FHIR base for FhirResourceType enum alignment -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+        </dependency>
+
+        <!-- ================================================================
+             jqwik — Property-Based Testing (Test scope)
+             Required per task spec: "Configure jqwik as test dependency"
+             Each property test uses @Property(tries = 100) annotation.
+             ================================================================ -->
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- jqwik needs both JUnit Jupiter and jqwik engines -->
+                    <useModulePath>false</useModulePath>
+                    <properties>
+                        <configurationParameters>
+                            junit.jupiter.execution.parallel.enabled=false
+                        </configurationParameters>
+                    </properties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

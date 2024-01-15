@@ -1,0 +1,2 @@
+# mdx-common runtime dependencies
+# All Lambda-specific dependencies are declared in each Lambda's own requirements.txt
