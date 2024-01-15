@@ -1,5 +1,5 @@
 /**
- * @hb/types — Shared TypeScript types package for Medyrax™ CDK infrastructure.
+ * @mdx/types — Shared TypeScript types package for Medyrax™ CDK infrastructure.
  *
  * Contains:
  * - CDK construct prop interfaces

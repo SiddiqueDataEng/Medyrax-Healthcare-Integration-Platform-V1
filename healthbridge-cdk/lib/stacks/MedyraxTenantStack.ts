@@ -4,7 +4,7 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
-import { MedyraxStackProps } from '../types';
+import { MedyraxStackProps } from '@mdx/types';
 import { MedyraxSecurityStack } from './MedyraxSecurityStack';
 import { MedyraxDataStack } from './MedyraxDataStack';
 
@@ -21,13 +21,13 @@ export interface MedyraxTenantStackProps extends MedyraxStackProps {
  *
  * Provisions the provisioning workflow infrastructure:
  * - The Step Functions state machine for org provisioning
- *   (hb-org-provision-sfn — Task 4.2 provides full Lambda implementations)
+ *   (mdx-org-provision-sfn — Task 4.2 provides full Lambda implementations)
  * - Scaffold for the deprovisioning Lambda (Task 4.4)
  * - Placeholder Lambda function definitions that will be fully implemented
  *   in Task 4
  *
  * Design reference (Multi-Tenant Management):
- *   "Provisioning Step Function (hb-org-provision-sfn): 10 states from
+ *   "Provisioning Step Function (mdx-org-provision-sfn): 10 states from
  *    ValidateProvisioningRequest to SendWelcomeNotification"
  *
  * Requirements 8.1, 8.2, 8.3, 8.4
@@ -94,7 +94,7 @@ export class MedyraxTenantStack extends cdk.Stack {
     });
 
     const storeTenantConfigState = new sfn.Pass(this, 'StoreTenantConfig', {
-      comment: 'Placeholder — writes complete tenant record to hb-tenants DynamoDB in Task 4',
+      comment: 'Placeholder — writes complete tenant record to mdx-tenants DynamoDB in Task 4',
       resultPath: '$.tenant',
     });
 
@@ -116,7 +116,7 @@ export class MedyraxTenantStack extends cdk.Stack {
       .next(sendWelcomeState);
 
     const provisioningStateMachine = new sfn.StateMachine(this, 'ProvisioningStateMachine', {
-      stateMachineName: `hb-org-provision-sfn-${envName}`,
+      stateMachineName: `mdx-org-provision-sfn-${envName}`,
       definition:       provisioningDefinition,
       stateMachineType: sfn.StateMachineType.STANDARD,
       timeout:          cdk.Duration.minutes(10),  // Requirement 8.1: complete within 5 minutes
@@ -133,7 +133,7 @@ export class MedyraxTenantStack extends cdk.Stack {
     // ── CloudFormation Outputs ────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'ProvisioningStateMachineArn', {
       value:      provisioningStateMachine.stateMachineArn,
-      exportName: `HB-ProvisioningStateMachineArn-${envName}`,
+      exportName: `MDX-ProvisioningStateMachineArn-${envName}`,
     });
   }
 }

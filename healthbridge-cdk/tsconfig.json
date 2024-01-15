@@ -23,7 +23,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "@hb/types": ["./lib/types/index"]
+      "@mdx/types": ["./lib/types/index"]
     }
   },
   "exclude": [

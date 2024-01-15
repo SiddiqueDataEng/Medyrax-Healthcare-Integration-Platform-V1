@@ -3,7 +3,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
-import { MedyraxStackProps } from '../types';
+import { MedyraxStackProps } from '@mdx/types';
 import { MedyraxSecurityStack } from './MedyraxSecurityStack';
 import { MedyraxDataStack } from './MedyraxDataStack';
 
@@ -58,7 +58,7 @@ export class MedyraxCoreStack extends cdk.Stack {
     const cognitoAccessTokenExpiry = envConfig.cognitoAccessTokenExpiryMinutes ?? 15;
 
     this.userPool = new cognito.UserPool(this, 'MedyraxUserPool', {
-      userPoolName:    `hb-user-pool-${envName}`,
+      userPoolName:    `mdx-user-pool-${envName}`,
       selfSignUpEnabled: false,
       signInAliases:   { email: true, username: true },
       standardAttributes: {
@@ -85,7 +85,7 @@ export class MedyraxCoreStack extends cdk.Stack {
 
     // Platform app client — used by the API Gateway JWT authorizer
     this.userPool.addClient('PlatformAppClient', {
-      userPoolClientName: `hb-platform-client-${envName}`,
+      userPoolClientName: `mdx-platform-client-${envName}`,
       authFlows: {
         userPassword:   false,
         userSrp:        true,
@@ -168,15 +168,15 @@ export class MedyraxCoreStack extends cdk.Stack {
     // ── CloudFormation Outputs ────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'ApiEndpoint', {
       value:      this.api.url,
-      exportName: `HB-ApiEndpoint-${envName}`,
+      exportName: `MDX-ApiEndpoint-${envName}`,
     });
     new cdk.CfnOutput(this, 'UserPoolArn', {
       value:      this.userPool.userPoolArn,
-      exportName: `HB-UserPoolArn-${envName}`,
+      exportName: `MDX-UserPoolArn-${envName}`,
     });
     new cdk.CfnOutput(this, 'UserPoolId', {
       value:      this.userPool.userPoolId,
-      exportName: `HB-UserPoolId-${envName}`,
+      exportName: `MDX-UserPoolId-${envName}`,
     });
   }
 }

@@ -3,7 +3,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
-import { MedyraxStackProps } from '../types';
+import { MedyraxStackProps } from '@mdx/types';
 
 /**
  * Props specific to the Data Stack.
@@ -24,9 +24,9 @@ export interface MedyraxDataStackProps extends MedyraxStackProps {
  * Per-org S3 prefixes and SQS queues are provisioned by the Tenant Stack.
  *
  * Design reference (Data Stack):
- *   "Create DynamoDB tables: hb-fhir-id-registry, hb-tenants,
- *    hb-transformation-audit, hb-terminology-codes, hb-deident-mapping,
- *    hb-cds-rules — all with point-in-time recovery and per-org CMK encryption"
+ *   "Create DynamoDB tables: mdx-fhir-id-registry, mdx-tenants,
+ *    mdx-transformation-audit, mdx-terminology-codes, mdx-deident-mapping,
+ *    mdx-cds-rules — all with point-in-time recovery and per-org CMK encryption"
  *
  * Task 3.1 implements the full HipaaCompliantBucket construct and full table
  * configurations. This stack provides the table ARNs for downstream stacks.
@@ -85,10 +85,10 @@ export class MedyraxDataStack extends cdk.Stack {
     };
 
     // ── 1. FHIR ID Registry ───────────────────────────────────────────────────
-    // Design: "hb-fhir-id-registry: maps client IDs to HealthLake logical IDs"
+    // Design: "mdx-fhir-id-registry: maps client IDs to HealthLake logical IDs"
     this.fhirIdRegistryTable = makeTable(
       'FhirIdRegistryTable',
-      `hb-fhir-id-registry-${envName}`,
+      `mdx-fhir-id-registry-${envName}`,
       { name: 'pk', type: dynamodb.AttributeType.STRING },   // orgId#{fhirResourceType}
       { name: 'sk', type: dynamodb.AttributeType.STRING }    // clientId
     );
@@ -100,20 +100,20 @@ export class MedyraxDataStack extends cdk.Stack {
     });
 
     // ── 2. Tenants ────────────────────────────────────────────────────────────
-    // Design: "hb-tenants: tenant configuration and integration profiles"
+    // Design: "mdx-tenants: tenant configuration and integration profiles"
     this.tenantsTable = makeTable(
       'TenantsTable',
-      `hb-tenants-${envName}`,
+      `mdx-tenants-${envName}`,
       { name: 'orgId', type: dynamodb.AttributeType.STRING },
       { name: 'sk',    type: dynamodb.AttributeType.STRING }   // "CONFIG" | "PROFILE#{profileId}"
     );
 
     // ── 3. Transformation Audit ───────────────────────────────────────────────
-    // Design: "hb-transformation-audit: TTL = timestamp + 7 years (HIPAA retention)"
+    // Design: "mdx-transformation-audit: TTL = timestamp + 7 years (HIPAA retention)"
     // Requirement 13.5: audit record must contain sourceId, targetId, rulesetVersion, timestamp
     this.transformationAuditTable = makeTable(
       'TransformationAuditTable',
-      `hb-transformation-audit-${envName}`,
+      `mdx-transformation-audit-${envName}`,
       { name: 'pk',  type: dynamodb.AttributeType.STRING },  // orgId#{messageControlId}
       { name: 'sk',  type: dynamodb.AttributeType.STRING },  // timestamp (ISO-8601)
       'ttl'                                                   // TTL = timestamp + 7 years
@@ -123,7 +123,7 @@ export class MedyraxDataStack extends cdk.Stack {
     // Design: "partition key {codeSystem}#{code}, attributes: display, synonyms, status"
     this.terminologyCodesTable = makeTable(
       'TerminologyCodesTable',
-      `hb-terminology-codes-${envName}`,
+      `mdx-terminology-codes-${envName}`,
       { name: 'pk', type: dynamodb.AttributeType.STRING },  // {codeSystem}#{code}
       { name: 'sk', type: dynamodb.AttributeType.STRING }   // version (e.g. "2024-01")
     );
@@ -140,7 +140,7 @@ export class MedyraxDataStack extends cdk.Stack {
     // Requirement 11.4: maps de-identified analytics IDs to original FHIR IDs
     this.deidentMappingTable = makeTable(
       'DeidentMappingTable',
-      `hb-deident-mapping-${envName}`,
+      `mdx-deident-mapping-${envName}`,
       { name: 'deidentId', type: dynamodb.AttributeType.STRING }
     );
 
@@ -151,10 +151,10 @@ export class MedyraxDataStack extends cdk.Stack {
     });
 
     // ── 6. CDS Rules ──────────────────────────────────────────────────────────
-    // Design: "hb-cds-rules: FHIRPath conditions and ClinicalImpression templates per org"
+    // Design: "mdx-cds-rules: FHIRPath conditions and ClinicalImpression templates per org"
     this.cdsRulesTable = makeTable(
       'CdsRulesTable',
-      `hb-cds-rules-${envName}`,
+      `mdx-cds-rules-${envName}`,
       { name: 'orgId',  type: dynamodb.AttributeType.STRING },
       { name: 'ruleId', type: dynamodb.AttributeType.STRING }
     );
@@ -163,7 +163,7 @@ export class MedyraxDataStack extends cdk.Stack {
     // Used by the RBAC enforcement middleware (Task 13.2)
     this.rbacPermissionsTable = makeTable(
       'RbacPermissionsTable',
-      `hb-rbac-permissions-${envName}`,
+      `mdx-rbac-permissions-${envName}`,
       { name: 'roleName',   type: dynamodb.AttributeType.STRING },
       { name: 'permission', type: dynamodb.AttributeType.STRING }
     );
@@ -172,7 +172,7 @@ export class MedyraxDataStack extends cdk.Stack {
 
     // Terminology code set snapshots for weekly refresh
     this.terminologySnapshotsBucket = new s3.Bucket(this, 'TerminologySnapshotsBucket', {
-      bucketName:        `hb-terminology-snapshots-${this.account}-${envName}`,
+      bucketName:        `mdx-terminology-snapshots-${this.account}-${envName}`,
       encryption:        s3.BucketEncryption.KMS,
       encryptionKey:     platformKey,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -183,7 +183,7 @@ export class MedyraxDataStack extends cdk.Stack {
 
     // HL7→FHIR transformation rulesets (loaded by Lambda on cold start)
     this.transformationRulesBucket = new s3.Bucket(this, 'TransformationRulesBucket', {
-      bucketName:        `hb-transformation-rules-${this.account}-${envName}`,
+      bucketName:        `mdx-transformation-rules-${this.account}-${envName}`,
       encryption:        s3.BucketEncryption.KMS,
       encryptionKey:     platformKey,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -194,7 +194,7 @@ export class MedyraxDataStack extends cdk.Stack {
 
     // Shared analytics output bucket (partitioned by resourceType/orgId/date)
     this.analyticsBucket = new s3.Bucket(this, 'AnalyticsBucket', {
-      bucketName:        `hb-analytics-${this.account}-${envName}`,
+      bucketName:        `mdx-analytics-${this.account}-${envName}`,
       encryption:        s3.BucketEncryption.KMS,
       encryptionKey:     platformKey,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -213,19 +213,19 @@ export class MedyraxDataStack extends cdk.Stack {
     // ── CloudFormation Outputs ────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'TenantsTableArn', {
       value:      this.tenantsTable.tableArn,
-      exportName: `HB-TenantsTableArn-${envName}`,
+      exportName: `MDX-TenantsTableArn-${envName}`,
     });
     new cdk.CfnOutput(this, 'FhirIdRegistryTableArn', {
       value:      this.fhirIdRegistryTable.tableArn,
-      exportName: `HB-FhirIdRegistryTableArn-${envName}`,
+      exportName: `MDX-FhirIdRegistryTableArn-${envName}`,
     });
     new cdk.CfnOutput(this, 'TransformationRulesBucketName', {
       value:      this.transformationRulesBucket.bucketName,
-      exportName: `HB-TransformationRulesBucketName-${envName}`,
+      exportName: `MDX-TransformationRulesBucketName-${envName}`,
     });
     new cdk.CfnOutput(this, 'AnalyticsBucketName', {
       value:      this.analyticsBucket.bucketName,
-      exportName: `HB-AnalyticsBucketName-${envName}`,
+      exportName: `MDX-AnalyticsBucketName-${envName}`,
     });
   }
 }

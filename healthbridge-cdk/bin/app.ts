@@ -61,7 +61,7 @@ const commonProps: cdk.StackProps = {
  * 1. Security Stack — KMS CMKs, IAM roles, CloudTrail.
  *    No dependencies. Must be deployed first.
  */
-const securityStack = new MedyraxSecurityStack(app, `HB-Security-${envName}`, {
+const securityStack = new MedyraxSecurityStack(app, `MDX-Security-${envName}`, {
   ...commonProps,
   envName,
   envConfig,
@@ -71,7 +71,7 @@ const securityStack = new MedyraxSecurityStack(app, `HB-Security-${envName}`, {
  * 2. Data Stack — S3 buckets, DynamoDB tables, HealthLake placeholder.
  *    Depends on Security Stack for KMS key ARNs.
  */
-const dataStack = new MedyraxDataStack(app, `HB-Data-${envName}`, {
+const dataStack = new MedyraxDataStack(app, `MDX-Data-${envName}`, {
   ...commonProps,
   envName,
   envConfig,
@@ -83,7 +83,7 @@ dataStack.addDependency(securityStack);
  * 3. Core Stack — API Gateway, Lambda functions, EventBridge, SQS.
  *    Depends on Security and Data stacks.
  */
-const coreStack = new MedyraxCoreStack(app, `HB-Core-${envName}`, {
+const coreStack = new MedyraxCoreStack(app, `MDX-Core-${envName}`, {
   ...commonProps,
   envName,
   envConfig,
@@ -97,7 +97,7 @@ coreStack.addDependency(dataStack);
  * 4. Observability Stack — CloudWatch alarms, dashboards, X-Ray groups.
  *    Depends on Core Stack for Lambda ARNs and queue names.
  */
-const obsStack = new MedyraxObsStack(app, `HB-Obs-${envName}`, {
+const obsStack = new MedyraxObsStack(app, `MDX-Obs-${envName}`, {
   ...commonProps,
   envName,
   envConfig,
@@ -110,7 +110,7 @@ obsStack.addDependency(coreStack);
  *    dynamically during the provisioning Step Function; this stack defines
  *    the reusable constructs and the provisioning Step Function itself).
  */
-const tenantStack = new MedyraxTenantStack(app, `HB-Tenant-${envName}`, {
+const tenantStack = new MedyraxTenantStack(app, `MDX-Tenant-${envName}`, {
   ...commonProps,
   envName,
   envConfig,

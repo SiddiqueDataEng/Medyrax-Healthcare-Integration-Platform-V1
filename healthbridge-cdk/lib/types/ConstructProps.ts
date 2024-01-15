@@ -19,7 +19,7 @@ export interface MedyraxStackProps extends cdk.StackProps {
  * deny-unencrypted uploads bucket policy"
  */
 export interface HipaaCompliantBucketProps {
-  /** Logical ID prefix used to name the bucket (e.g. "hb-{orgId}-inbound"). */
+  /** Logical ID prefix used to name the bucket (e.g. "mdx-{orgId}-inbound"). */
   bucketNamePrefix: string;
   /** KMS key ARN for SSE-KMS encryption. */
   kmsKeyArn: string;

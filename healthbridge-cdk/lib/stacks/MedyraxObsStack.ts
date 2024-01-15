@@ -4,7 +4,7 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as cwactions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Construct } from 'constructs';
-import { MedyraxStackProps } from '../types';
+import { MedyraxStackProps } from '@mdx/types';
 import { MedyraxCoreStack } from './MedyraxCoreStack';
 
 /**
@@ -45,12 +45,12 @@ export class MedyraxObsStack extends cdk.Stack {
 
     // ── SNS Alert Topics ─────────────────────────────────────────────────────
     this.criticalAlarmsTopic = new sns.Topic(this, 'CriticalAlarmsTopic', {
-      topicName:    `hb-critical-alarms-${envName}`,
+      topicName:    `mdx-critical-alarms-${envName}`,
       displayName:  'Medyrax™ Critical Alarms',
     });
 
     this.infoAlarmsTopic = new sns.Topic(this, 'InfoAlarmsTopic', {
-      topicName:    `hb-info-alarms-${envName}`,
+      topicName:    `mdx-info-alarms-${envName}`,
       displayName:  'Medyrax™ Info Notifications',
     });
 
@@ -129,7 +129,7 @@ export class MedyraxObsStack extends cdk.Stack {
     // ── API Gateway Latency Breach Alarm ─────────────────────────────────────
     // Requirement 14.3: FHIR API p99 > 500ms
     const fhirLatencyAlarm = new cloudwatch.Alarm(this, 'FhirLatencyBreachAlarm', {
-      alarmName:          `HB-LatencyBreach-FHIR-${envName}`,
+      alarmName:          `MDX-LatencyBreach-FHIR-${envName}`,
       alarmDescription:   'FHIR API p99 latency exceeded 500ms SLA',
       metric: new cloudwatch.Metric({
         namespace:  'AWS/ApiGateway',
@@ -148,11 +148,11 @@ export class MedyraxObsStack extends cdk.Stack {
     // ── CloudFormation Outputs ────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'CriticalAlarmsTopicArn', {
       value:      this.criticalAlarmsTopic.topicArn,
-      exportName: `HB-CriticalAlarmsTopicArn-${envName}`,
+      exportName: `MDX-CriticalAlarmsTopicArn-${envName}`,
     });
     new cdk.CfnOutput(this, 'DashboardUrl', {
       value:      `https://${this.region}.console.aws.amazon.com/cloudwatch/home#dashboards:name=Medyrax-Integration-Health-${envName}`,
-      exportName: `HB-DashboardUrl-${envName}`,
+      exportName: `MDX-DashboardUrl-${envName}`,
     });
   }
 }

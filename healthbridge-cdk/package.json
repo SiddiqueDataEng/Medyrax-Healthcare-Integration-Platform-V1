@@ -1,5 +1,5 @@
 {
-  "name": "Medyrax-cdk",
+  "name": "medyrax-cdk",
   "version": "1.0.0",
   "description": "Medyrax™ Platform — AWS CDK TypeScript infrastructure",
   "main": "bin/app.js",
