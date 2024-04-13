@@ -1,0 +1,1 @@
+  [2025-11-17 14:30:00] feat(bus): EventBridge rules -- per resource type → SQS FIFO queues, DLQ, CW alarm DLQ depth 
