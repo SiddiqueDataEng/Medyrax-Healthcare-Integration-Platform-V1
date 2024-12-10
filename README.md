@@ -10,6 +10,10 @@
 
 ---
 
+> **Ready to deploy?** See the [**AWS Deployment Guide →**](DEPLOYMENT.md) for complete step-by-step instructions covering dev, staging, and production environments.
+
+---
+
 ## Overview
 
 Medyrax is a production-grade **multi-tenant healthcare data integration platform** that enables
@@ -178,17 +182,40 @@ All tables: **PITR enabled · KMS CMK encrypted · PAY_PER_REQUEST**
 
 ## Getting Started
 
+### Quick Start
+
+```bash
+git clone https://github.com/SiddiqueDataEng/Medyrax-Healthcare-Integration-Platform.git
+cd Medyrax-Healthcare-Integration-Platform/aws/medyrax-cdk
+npm install && npm run build
+npx cdk synth --context env=dev
+```
+
+For the complete deployment walkthrough — prerequisites, environment configuration, first-time bootstrap, stack deployment, post-deployment setup, and CI/CD — see the:
+
+**[AWS Deployment Guide](DEPLOYMENT.md)**
+
+It covers:
+- [Prerequisites & tool versions](DEPLOYMENT.md#1-prerequisites)
+- [AWS account preparation & IAM setup](DEPLOYMENT.md#3-aws-account-preparation)
+- [Environment configuration (dev / staging / prod)](DEPLOYMENT.md#4-environment-configuration)
+- [First-time CDK bootstrap](DEPLOYMENT.md#5-first-time-bootstrap)
+- [Deploying all stacks in order](DEPLOYMENT.md#7-deploying-stacks)
+- [Provisioning your first organization](DEPLOYMENT.md#9-provisioning-your-first-organization)
+- [Verifying the deployment](DEPLOYMENT.md#10-verifying-the-deployment)
+- [CI/CD pipeline setup](DEPLOYMENT.md#11-cicd-pipeline-setup)
+- [Rollback & troubleshooting](DEPLOYMENT.md#13-rollback-procedure)
+- [Cost estimates](DEPLOYMENT.md#16-cost-estimates)
+
 ### Prerequisites
 
-- Node.js 20+
-- Python 3.12+
+- Node.js 20+, Python 3.12+
 - AWS CLI v2 configured (`aws configure`)
 - CDK CLI: `npm install -g aws-cdk@2.144.0`
 
 ### Install & Build
 
 ```bash
-# Install CDK dependencies
 cd medyrax-cdk
 npm install
 npm run build
@@ -200,7 +227,7 @@ npx cdk synth --context env=dev
 ### Deploy
 
 ```bash
-# Bootstrap (first time only)
+# Bootstrap (first time only per account/region)
 npx cdk bootstrap --context env=dev
 
 # Deploy all stacks
@@ -213,13 +240,13 @@ npx cdk deploy --context env=staging --all --require-approval broadening
 ### Run Tests
 
 ```bash
-# CDK unit + snapshot tests
+# CDK unit + snapshot + property-based tests
 cd medyrax-cdk && npm test
 
-# Python Lambda unit tests
-cd lambdas/mdx_common && python -m pytest
+# Python Lambda property-based tests
+cd lambdas/mdx_common && python -m pytest tests/ -v
 
-# Integration tests (requires Docker for LocalStack)
+# Full integration test suite (requires Docker)
 ./scripts/run-integration-tests.sh
 ```
 
@@ -238,6 +265,18 @@ cd lambdas/mdx_common && python -m pytest
 | **De-identification** | HIPAA Safe Harbor — all 18 PHI identifiers removed/hashed |
 | **Tenant isolation** | Per-org KMS CMK, SQS FIFO queues, EventBridge buses |
 | **PITR** | Point-in-time recovery enabled on all DynamoDB tables |
+
+---
+
+## Documentation
+
+| Document | Description |
+|---|---|
+| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Step-by-step AWS deployment guide — dev, staging, production |
+| [lambdas/README.md](lambdas/README.md) | Lambda function inventory and local development guide |
+| [medyrax-cdk/README.md](medyrax-cdk/README.md) | CDK infrastructure overview |
+| [integration-tests/README.md](integration-tests/README.md) | LocalStack integration test setup |
+| [scripts/README.md](scripts/README.md) | Build and deployment script reference |
 
 ---
 

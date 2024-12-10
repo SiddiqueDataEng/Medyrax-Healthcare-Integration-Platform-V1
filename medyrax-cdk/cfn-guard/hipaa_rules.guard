@@ -1,0 +1,97 @@
+# cfn-guard HIPAA policy rules (task 22.2)
+# Validates CloudFormation templates for HIPAA compliance controls.
+# Run with: cfn-guard validate -d template.json -r hipaa_rules.guard
+#
+# Requirements: 7.1, 7.8, 15.6
+
+# ── Rule 1: All S3 buckets must have SSE-KMS encryption ──────────────────────
+rule s3_bucket_encrypted {
+  AWS::S3::Bucket {
+    Properties.BucketEncryption.ServerSideEncryptionConfiguration[*].ServerSideEncryptionByDefault.SSEAlgorithm == "aws:kms"
+    << S3 buckets must use SSE-KMS encryption (HIPAA PHI requirement) >>
+  }
+}
+
+# ── Rule 2: S3 buckets must block all public access ───────────────────────────
+rule s3_bucket_no_public_access {
+  AWS::S3::Bucket {
+    Properties.PublicAccessBlockConfiguration.BlockPublicAcls == true
+    Properties.PublicAccessBlockConfiguration.BlockPublicPolicy == true
+    Properties.PublicAccessBlockConfiguration.IgnorePublicAcls == true
+    Properties.PublicAccessBlockConfiguration.RestrictPublicBuckets == true
+    << S3 buckets must block all public access (HIPAA PHI requirement) >>
+  }
+}
+
+# ── Rule 3: DynamoDB tables must have PITR enabled ────────────────────────────
+rule dynamodb_pitr_enabled {
+  AWS::DynamoDB::Table {
+    Properties.PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled == true
+    << DynamoDB tables must have Point-In-Time Recovery enabled (HIPAA Requirement 7.1) >>
+  }
+}
+
+# ── Rule 4: DynamoDB tables must use KMS encryption ──────────────────────────
+rule dynamodb_kms_encrypted {
+  AWS::DynamoDB::Table {
+    Properties.SSESpecification.SSEEnabled == true
+    Properties.SSESpecification.SSEType == "KMS"
+    << DynamoDB tables must use KMS encryption (HIPAA PHI requirement) >>
+  }
+}
+
+# ── Rule 5: KMS keys must have key rotation enabled ──────────────────────────
+rule kms_key_rotation_enabled {
+  AWS::KMS::Key {
+    Properties.EnableKeyRotation == true
+    << KMS keys must have auto-rotation enabled (HIPAA Requirement 7.6) >>
+  }
+}
+
+# ── Rule 6: SQS queues must have KMS encryption ──────────────────────────────
+rule sqs_kms_encrypted {
+  AWS::SQS::Queue {
+    Properties.KmsMasterKeyId exists
+    << SQS queues carrying PHI must use KMS encryption >>
+  }
+}
+
+# ── Rule 7: Lambda functions must have X-Ray tracing enabled ─────────────────
+rule lambda_xray_tracing {
+  AWS::Lambda::Function {
+    Properties.TracingConfig.Mode == "Active"
+    << Lambda functions must have X-Ray active tracing enabled >>
+  }
+}
+
+# ── Rule 8: CloudTrail must be enabled and multi-region ──────────────────────
+rule cloudtrail_enabled {
+  AWS::CloudTrail::Trail {
+    Properties.IsLogging == true
+    Properties.EnableLogFileValidation == true
+    Properties.IncludeGlobalServiceEvents == true
+    << CloudTrail must be enabled with log file validation (HIPAA Requirement 7.8) >>
+  }
+}
+
+# ── Rule 9: IAM roles must not have AdministratorAccess except Platform_Admin ─
+rule iam_no_wildcard_admin {
+  AWS::IAM::Role {
+    when Properties.RoleName != /.*platform.*admin.*/ {
+      Properties.ManagedPolicyArns[*] != "arn:aws:iam::aws:policy/AdministratorAccess"
+      << IAM roles must not have AdministratorAccess (HIPAA least-privilege) >>
+    }
+  }
+}
+
+# ── Rule 10: Cognito user pools must enforce password complexity ──────────────
+rule cognito_password_policy {
+  AWS::Cognito::UserPool {
+    Properties.Policies.PasswordPolicy.MinimumLength >= 14
+    Properties.Policies.PasswordPolicy.RequireUppercase == true
+    Properties.Policies.PasswordPolicy.RequireLowercase == true
+    Properties.Policies.PasswordPolicy.RequireNumbers == true
+    Properties.Policies.PasswordPolicy.RequireSymbols == true
+    << Cognito password policy must enforce complexity (HIPAA Requirement 7.7) >>
+  }
+}

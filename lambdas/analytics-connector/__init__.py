@@ -1,0 +1,1 @@
+# analytics-connector Lambda package

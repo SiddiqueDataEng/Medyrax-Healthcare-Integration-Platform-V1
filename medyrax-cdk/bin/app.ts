@@ -19,6 +19,8 @@ import { EnvironmentConfig } from '../src/types/EnvironmentConfig';
 import { MedyraxSecurityStack } from '../src/stacks/MedyraxSecurityStack';
 import { MedyraxDataStack } from '../src/stacks/MedyraxDataStack';
 import { MedyraxTenantStack } from '../src/stacks/MedyraxTenantStack';
+import { MedyraxCoreStack } from '../src/stacks/MedyraxCoreStack';
+import { MedyraxObsStack } from '../src/stacks/MedyraxObsStack';
 
 const app = new cdk.App();
 
@@ -67,19 +69,20 @@ new MedyraxDataStack(app, `MedyraxDataStack-${envName}`, {
   platformCmkArn: cdk.Fn.importValue(`mdx-platform-cmk-arn-${envName}`),
 });
 
-/** Core Stack — API Gateway, Lambda functions, EventBridge, SQS (Tasks 8–9, 12). */
-new cdk.Stack(app, `MedyraxCoreStack-${envName}`, {
+/** Core Stack — API Gateway, Cognito User Pool, base routes (Tasks 5.4, 9.5, 13.5, 14.1–14.4). */
+const coreStack = new MedyraxCoreStack(app, `MedyraxCoreStack-${envName}`, {
   ...stackProps,
   stackName: `medyrax-core-${envName}`,
-  description: 'Medyrax™ Core Layer: API Gateway, Lambda, EventBridge, SQS',
+  description: 'Medyrax™ Core Layer: API Gateway, Cognito, base routes',
 });
 
-/** Observability Stack — CloudWatch dashboards, alarms, X-Ray (Task 19). */
-new cdk.Stack(app, `MedyraxObsStack-${envName}`, {
+/** Observability Stack — CloudWatch alarms, dashboards, X-Ray (Tasks 21.1–21.6). */
+const obsStack = new MedyraxObsStack(app, `MedyraxObsStack-${envName}`, {
   ...stackProps,
   stackName: `medyrax-obs-${envName}`,
   description: 'Medyrax™ Observability Layer: CloudWatch, X-Ray, PagerDuty alarms',
 });
+obsStack.addDependency(coreStack);
 
 /** Tenant Stack — per-org provisioning CDK constructs (Task 4). */
 new MedyraxTenantStack(app, `MedyraxTenantStack-${envName}`, {
