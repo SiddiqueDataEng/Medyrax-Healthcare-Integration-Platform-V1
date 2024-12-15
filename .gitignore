@@ -18,7 +18,7 @@ venv/
 
 # IDE / Kiro
 .vscode/
-.kiro/
+
 
 # AWS / CDK secrets
 cdk.context.json
@@ -34,7 +34,20 @@ target/
 *.log
 *.zip
 *.db
-GITHUBLIST.csv
-master-config.bat
+
+# V2 project (separate repo)
+medyrax-v2/
+
+# Upload/backdate helper scripts
 aws-medyrax-backdate.bat
-ROUGH.TXT
+aws-medyrax-upload.bat
+backdate_push.py
+check_github.ps1
+github_setup.py
+push_v2.py
+redate_and_push.py
+_date_mapping.txt
+_filter_dates.sh
+1
+100
+
